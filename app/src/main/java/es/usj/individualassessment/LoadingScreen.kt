@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,8 +13,6 @@ import com.google.android.gms.location.LocationServices
 import es.usj.individualassessment.databinding.ActivityLoadingScreenBinding
 import java.io.File
 import java.io.FileOutputStream
-import java.io.FileWriter
-import java.io.IOException
 import java.net.URL
 import java.util.concurrent.CompletableFuture
 import javax.net.ssl.HttpsURLConnection
@@ -26,7 +23,7 @@ class LoadingScreen : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var tasks: Array<CompletableFuture<Void>>
 
-    private val API_KEY = "YSM2B6WBW6W4GYST2A5PL4PM8"
+    private val apiKey = "YSM2B6WBW6W4GYST2A5PL4PM8"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,13 +64,13 @@ class LoadingScreen : AppCompatActivity() {
 
             for (city in cities) {
                 val weatherData = fetchWeatherForCity(city)
-                saveWeatherData(city, weatherData)
+                saveCitiesData(city, weatherData)
             }
         }
     }
 
     private fun fetchWeatherForCity(city: String): String {
-        val url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/$city?unitGroup=metric&include=events&key=$API_KEY&contentType=json"
+        val url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/$city?unitGroup=metric&include=events&key=$apiKey&contentType=json"
 
         val connection = URL(url).openConnection() as HttpsURLConnection
         connection.requestMethod = "GET"
@@ -82,14 +79,13 @@ class LoadingScreen : AppCompatActivity() {
 
         val responseCode = connection.responseCode
         if (responseCode == HttpsURLConnection.HTTP_OK) {
-            val response = connection.inputStream.bufferedReader().use { it.readText() }
-            return response
+            return connection.inputStream.bufferedReader().use { it.readText() }
         } else {
             throw Exception("Failed to fetch weather data for $city. Response code: $responseCode")
         }
     }
 
-        private fun saveWeatherData(city: String, data: String): CompletableFuture<Void> {
+        private fun saveCitiesData(city: String, data: String): CompletableFuture<Void> {
             return CompletableFuture.runAsync {
                 try {
                     val directory = File(applicationContext.filesDir, "cities")
@@ -102,7 +98,7 @@ class LoadingScreen : AppCompatActivity() {
                     outputStream.write(data.toByteArray())
                     outputStream.close()
 
-                    Log.d("WeatherSave:", "City: " + city + " saved succesfully")
+                    Log.d("WeatherSave:", "City: $city saved successfully")
                 }
                 catch (e: Error) {
                     Log.d("WeatherSave:", e.toString())
