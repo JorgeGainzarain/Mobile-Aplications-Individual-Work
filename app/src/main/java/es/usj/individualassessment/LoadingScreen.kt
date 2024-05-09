@@ -23,6 +23,19 @@ class LoadingScreen : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var tasks: Array<CompletableFuture<Void>>
 
+    private val cities = listOf(
+        "Zaragoza",
+        "Tokyo",
+        "New York City",
+        "Sydney",
+        "Paris",
+        "Rome",
+        "Cape Town",
+        "Istanbul",
+        "Rio de Janeiro",
+        "Mumbai"
+    )
+
     private val apiKey = "YSM2B6WBW6W4GYST2A5PL4PM8"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,23 +62,13 @@ class LoadingScreen : AppCompatActivity() {
 
     private fun loadCities(): CompletableFuture<Void> {
         return CompletableFuture.runAsync {
-            val cities = listOf(
-                "Zaragoza",
-                "Tokyo",
-                "New York City",
-                "Sydney",
-                "Paris",
-                "Cairo",
-                "Cape Town",
-                "Moscow",
-                "Rio de Janeiro",
-                "Mumbai"
-            )
 
             for (city in cities) {
                 val weatherData = fetchWeatherForCity(city)
                 saveCitiesData(city, weatherData)
             }
+
+            listCities = getCities(applicationContext)
         }
     }
 
