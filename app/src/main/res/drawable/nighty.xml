@@ -1,0 +1,25 @@
+<!-- rounded_border.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background shape with rounded corners -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" /> <!-- Transparent background -->
+            <corners android:radius="20dp" /> <!-- Rounded corners -->
+        </shape>
+    </item>
+
+    <!-- Image in the center -->
+    <item android:drawable="@drawable/night" android:gravity="center" />
+
+    <!-- Border stroke -->
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="2dp"
+                android:color="@color/blue" /> <!-- Border color and width -->
+            <corners android:radius="20dp" /> <!-- Rounded corners -->
+        </shape>
+    </item>
+
+</layer-list>
