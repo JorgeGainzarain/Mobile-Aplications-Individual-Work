@@ -1,15 +1,20 @@
 package es.usj.individualassessment.Classes;
 
 import static es.usj.individualassessment.UtilityFunctionsKt.compareTime;
+import static es.usj.individualassessment.UtilityFunctionsKt.getLocalCalendar;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class City {
@@ -26,23 +31,49 @@ public class City {
     public City(String jsonString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            this.name = jsonObject.getString("resolvedAddress").split(", ")[0];
+            this.name = jsonObject.getString("address");
             this.latitude = jsonObject.getDouble("latitude");
             this.longitude = jsonObject.getDouble("longitude");
-            //this.currConditions = new Forecast(jsonObject.getJSONObject("currentConditions"));
 
             String[] addressParts = jsonObject.getString("resolvedAddress").split(", ");
             this.province = (addressParts.length == 3) ? addressParts[1] : null;
             this.country = (addressParts.length == 3) ? addressParts[2] : addressParts[1];
 
+            this.calendar = getLocalCalendar(jsonObject.getInt("tzoffset"), new Date());
 
-            Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-            cal.add(Calendar.HOUR_OF_DAY, jsonObject.getInt("tzoffset"));
-            this.calendar = cal;
-
+            Log.d("JsonDebug", this.name);
             this.history = new History(jsonObject.getJSONArray("days"));
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public JSONObject toJSON() throws JSONException {
+        StringBuilder resolvedAddress = new StringBuilder();
+        resolvedAddress.append(name);
+        if (province != null) {
+            resolvedAddress.append(", ").append(province);
+        }
+        resolvedAddress.append(", ").append(country);
+
+        JSONObject jsonObject = new JSONObject()
+                .put("address", name)
+                .put("latitude", latitude)
+                .put("longitude", longitude)
+                .put("resolvedAddress", resolvedAddress.toString())
+                .put("tzoffset", calendar.getTimeZone().getRawOffset() / 3600000)
+                .put("days", history.toJSON());
+
+        return jsonObject;
+    }
+
+
+    public void addData(String jsonString) {
+        try {
+            this.history.addNewDays(new JSONObject(jsonString).getJSONArray("days"));
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -57,21 +88,17 @@ public class City {
 
     public boolean isDay() {
 
-        String[] currentTimeParts = getTimeString().split(" : ");
-        int currentHour = Integer.parseInt(currentTimeParts[0]);
-        int currentMinute = Integer.parseInt(currentTimeParts[1]);
-
-        Log.d("DateTime", "City: " + name + " -> " + currentHour + " : " + currentMinute + " -> "
+        Log.d("DateTime", "City: " + name + " -> " + getTimeString() + " -> "
                 + "(" + getSunrise() + " , " + getSunset() + ")" );
         return !before(getSunrise()) && before(getSunset());
     }
 
-
+    @SuppressLint("SimpleDateFormat")
     private boolean before(String time) {
         try {
             Date date = new SimpleDateFormat("hh:mm:ss").parse(time);
 
-            Calendar cal1 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            Calendar cal1 = (Calendar) calendar.clone();
             assert date != null;
             cal1.setTime(date);
 
@@ -93,7 +120,6 @@ public class City {
 
     // Getters and setters
     public Day getToday() {
-        Log.d("TestLog", name);
         return history.getToday(calendar);
     }
     public String getName() {

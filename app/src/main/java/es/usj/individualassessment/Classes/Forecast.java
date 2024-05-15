@@ -1,12 +1,12 @@
 package es.usj.individualassessment.Classes;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
 
 public class Forecast {
-    private Date datetime;
     private double temp;
     private double dew;
     private double humidity;
@@ -28,7 +28,6 @@ public class Forecast {
 
     public Forecast(JSONObject jsonObject) {
         try {
-            this.datetime = new Date(jsonObject.optLong("datetimeEpoch", 0) * 1000);
             this.temp = jsonObject.optDouble("temp", 0.0);
             this.dew = jsonObject.optDouble("dew", 0.0);
             this.humidity = jsonObject.optDouble("humidity", 0.0);
@@ -52,13 +51,30 @@ public class Forecast {
         }
     }
 
-    public Date getDatetime() {
-        return datetime;
+    public JSONObject toJSON() throws JSONException {
+        JSONObject jsonObject = new JSONObject()
+                .put("temp", temp)
+                .put("dew", dew)
+                .put("humidity", humidity)
+                .put("precip", precip)
+                .put("precipprob", precipProb)
+                .put("preciptype", precipType)
+                .put("snow", snow)
+                .put("snowdepth", snowDepth)
+                .put("windspeed", windSpeed)
+                .put("winddir", windDir)
+                .put("pressure", pressure)
+                .put("cloudcover", cloudCover)
+                .put("visibility", visibility)
+                .put("solarradiation", solarRad)
+                .put("solarenergy", solarEnergy)
+                .put("moonphase", moonPhase)
+                .put("conditions", condition)
+                .put("icon", icon);
+
+        return jsonObject;
     }
 
-    public void setDatetime(Date datetime) {
-        this.datetime = datetime;
-    }
 
     public double getPrecip() {
         return precip;
