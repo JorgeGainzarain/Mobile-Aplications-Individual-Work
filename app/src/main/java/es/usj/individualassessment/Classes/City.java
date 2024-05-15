@@ -6,7 +6,6 @@ import static es.usj.individualassessment.UtilityFunctionsKt.getLocalCalendar;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,8 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.List;
 
 public class City {
     private String name;
@@ -26,6 +24,8 @@ public class City {
     //private Forecast currConditions;
     private Calendar calendar;
     private History history;
+
+    private Day today;
 
 
     public City(String jsonString) {
@@ -42,7 +42,8 @@ public class City {
             this.calendar = getLocalCalendar(jsonObject.getInt("tzoffset"), new Date());
 
             Log.d("JsonDebug", this.name);
-            this.history = new History(jsonObject.getJSONArray("days"));
+            this.history = new History(jsonObject.getJSONArray("days"), this.calendar);
+            getUpdatedToday();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,6 +69,13 @@ public class City {
         return jsonObject;
     }
 
+    public Day getLastHistoryDay() {
+        return history.getLastHistoryDay();
+    }
+
+    public List<Day> getDays() {
+        return history.getDays();
+    }
 
     public void addData(String jsonString) {
         try {
@@ -88,8 +96,8 @@ public class City {
 
     public boolean isDay() {
 
-        Log.d("DateTime", "City: " + name + " -> " + getTimeString() + " -> "
-                + "(" + getSunrise() + " , " + getSunset() + ")" );
+        //Log.d("DateTime", "City: " + name + " -> " + getTimeString() + " -> "
+        //        + "(" + getSunrise() + " , " + getSunset() + ")" );
         return !before(getSunrise()) && before(getSunset());
     }
 
@@ -98,29 +106,35 @@ public class City {
         try {
             Date date = new SimpleDateFormat("hh:mm:ss").parse(time);
 
-            Calendar cal1 = (Calendar) calendar.clone();
+            Calendar cal1 = (Calendar) this.calendar.clone();
             assert date != null;
             cal1.setTime(date);
 
-            return compareTime(calendar, cal1) == -1;
+            int comparation = compareTime(this.calendar, cal1);
+
+            Log.d("DateTime", "City: " + name + " -> " + calendar.getTime() + " -> "
+                    + "(" + cal1.getTime() + ")" );
+
+            return comparation == -1;
+
 
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
 
-
     public String getSunrise() {
-        return getToday().getSunrise();
+        return today.getSunrise();
     }
 
     public String getSunset() {
-        return getToday().getSunset();
+        return today.getSunset();
     }
 
     // Getters and setters
-    public Day getToday() {
-        return history.getToday(calendar);
+    public Day getUpdatedToday() {
+        this.today = history.getToday(calendar);
+        return this.today;
     }
     public String getName() {
         return name;

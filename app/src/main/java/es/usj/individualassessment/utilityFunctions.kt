@@ -24,11 +24,13 @@ fun getCities(context: Context): MutableList<City> {
                 val jsonString = file.readText()
                 val city = City(jsonString)
                 cities.add(city)
+                Log.d("CitiesDebug", "City ${city.name} Loaded succesfully")
             } catch (e: Exception) {
                 Log.e("WeatherLoad", "Error reading file: ${file.name}", e)
             }
         }
     }
+    Log.d("CitiesDebug", "Cities Loaded succesfully")
     return cities
 }
 
@@ -106,7 +108,7 @@ fun compareTime(cal1: Calendar, cal2: Calendar): Int {
 }
 
 fun getLocalCalendar(tzOffset: Int, date: Date): Calendar {
-    val calendar = Calendar.getInstance()
+    val calendar = Calendar.getInstance(TimeZone.getTimeZone("GTM"))
     calendar.time = date
     calendar.add(Calendar.HOUR_OF_DAY, tzOffset);
     return calendar

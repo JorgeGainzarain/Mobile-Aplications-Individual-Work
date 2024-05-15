@@ -16,19 +16,24 @@ public class Day {
     private String sunrise;
     private String sunset;
     private Date date;
-    private List<Hour> hours;
+    //private List<Hour> hours;
+    private boolean prediction;
 
     public Day(JSONObject jsonObject) throws JSONException, ParseException {
 
-        hours = new ArrayList<>();
+        //hours = new ArrayList<>();
 
+        this.prediction = false;
         this.sunrise = jsonObject.getString("sunrise");
         this.sunset = jsonObject.getString("sunset");
 
+        /*
         JSONArray jsonHours = jsonObject.getJSONArray("hours");
-        for (int i = 0; i < jsonHours.length() -1; i++) {
+        for (int i = 0; i < jsonHours.length(); i++) {
             hours.add(new Hour(jsonHours.getJSONObject(i)));
         }
+        */
+
 
         String dateString = jsonObject.getString("datetime");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -48,12 +53,15 @@ public class Day {
                 .put("sunset", sunset)
                 .put("datetime", dateString);
 
+        /*
         JSONArray jsonHours = new JSONArray();
         for (Hour hour : hours) {
             jsonHours.put(hour.toJSON());
         }
 
         jsonObject.put("hours", jsonHours);
+        */
+
 
         return jsonObject;
     }
@@ -85,5 +93,13 @@ public class Day {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public boolean isPrediction() {
+        return prediction;
+    }
+
+    public void setPrediction(boolean prediction) {
+        this.prediction = prediction;
     }
 }
