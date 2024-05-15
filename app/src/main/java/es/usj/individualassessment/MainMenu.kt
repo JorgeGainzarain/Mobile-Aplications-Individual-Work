@@ -15,9 +15,8 @@ class MainMenu : AppCompatActivity() {
 
         val latitude = intent.getDoubleExtra("latitude", 0.0)
         val longitude = intent.getDoubleExtra("longitude", 0.0)
-        val location = intent.getStringExtra("location")
 
-        view.textViewLocation.text = "Current Location: \n" + longitude + "\n" + latitude
+        view.textViewLocation.text = "Current Location: \n" + "%.2f".format(latitude) + "\n" + "%.2f".format(longitude)
 
         // Set OnClickListener for the button to start CityList activity
         view.CityList.setOnClickListener {

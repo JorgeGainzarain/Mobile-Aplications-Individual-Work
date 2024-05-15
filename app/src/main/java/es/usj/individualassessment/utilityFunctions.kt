@@ -9,10 +9,12 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.math.pow
 
-var listCities = mutableListOf<City>()
+var listCities: MutableList<City> = mutableListOf()
 
 fun getCities(context: Context): MutableList<City> {
+    listCities = listOf<City>().toMutableList()
     val cities = mutableListOf<City>()
     val directory = File(context.filesDir, "cities")
     if (directory.exists() && directory.isDirectory) {
@@ -22,7 +24,6 @@ fun getCities(context: Context): MutableList<City> {
                 val jsonString = file.readText()
                 val city = City(jsonString)
                 cities.add(city)
-                listCities.add(city) // Add the city to the listCities
             } catch (e: Exception) {
                 Log.e("WeatherLoad", "Error reading file: ${file.name}", e)
             }
@@ -30,7 +31,6 @@ fun getCities(context: Context): MutableList<City> {
     }
     return cities
 }
-
 
 fun resetDir(dirName: String, context : Context) {
     // If directory already has files reset it
@@ -105,10 +105,11 @@ fun compareTime(cal1: Calendar, cal2: Calendar): Int {
     }
 }
 
-fun getCurrentDate(): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val currentDate = Date()
-    return dateFormat.format(currentDate)
+fun getLocalCalendar(tzOffset: Int, date: Date): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    calendar.add(Calendar.HOUR_OF_DAY, tzOffset);
+    return calendar
 }
 
 

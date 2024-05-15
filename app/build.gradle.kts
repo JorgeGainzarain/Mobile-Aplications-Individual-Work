@@ -11,7 +11,7 @@ android {
         applicationId = "es.usj.individualassessment"
         minSdk = 33
         //noinspection OldTargetApi
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
