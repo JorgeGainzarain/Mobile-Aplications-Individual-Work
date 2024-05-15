@@ -11,18 +11,32 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class History {
     private final List<Day> days;
 
-    public History(JSONArray jsonDays) throws JSONException, ParseException {
+    public History(JSONArray jsonDays, Calendar calendar) throws JSONException, ParseException {
 
         this.days = new ArrayList<>();
 
-        for (int i = 0; i < jsonDays.length() -1; i++) {
+        for (int i = 0; i < jsonDays.length(); i++) {
             Log.d("JsonDebug", i + "->" + jsonDays.getJSONObject(i).toString());
-            days.add(new Day(jsonDays.getJSONObject(i)));
+            Day day = new Day(jsonDays.getJSONObject(i));
+
+            /*
+            Calendar auxCal = (Calendar) calendar.clone();
+            Date auxDate = day.getDate();
+            auxCal.setTime(auxDate);
+
+            if(!auxCal.before(calendar)) {
+                day.setPrediction(true);
+            }
+            */
+
+            days.add(day);
+
         }
         sortDays();
 
@@ -36,7 +50,24 @@ public class History {
         return jsonArray;
     }
 
+    public List<Day> getDays() {
+        return days;
+    }
+
+    public Day getLastHistoryDay() {
+        Day lastDay = null;
+        for (Day day : days) {
+            //Log.d("LogicDebug" , day.getDate() + " -> " + !day.isPrediction());
+            if (!day.isPrediction()) {
+                lastDay = day;
+            }
+        }
+        return lastDay;
+    }
+
+
     public Day getToday(Calendar calendar) {
+        Log.d("PerformanceDebug", "getTodayLoop called");
         for (Day day : days) {
             if (compareDate(day.getDate(), calendar.getTime()) == 0) {
                 return day;
@@ -50,17 +81,8 @@ public class History {
             JSONObject jsonObject = newJsonDays.getJSONObject(i);
             Day newDay = new Day(jsonObject);
 
-            boolean isDuplicate = false;
-            for (Day existingDay : days) {
-                if (existingDay.getDate().equals(newDay.getDate())) {
-                    isDuplicate = true;
-                    break;
-                }
-            }
+            days.add(newDay);
 
-            if (!isDuplicate) {
-                days.add(newDay);
-            }
         }
         sortDays();
     }
@@ -79,8 +101,9 @@ class DaysComparator implements java.util.Comparator<Day> {
         Calendar cal2 = Calendar.getInstance();
         cal2.setTime(b.getDate());
 
-        if(cal1.after(cal2)) return 1;
+        if (cal1.after(cal2)) return 1;
         else if (cal1.before(cal2)) return -1;
         else return 0;
     }
 }
+
