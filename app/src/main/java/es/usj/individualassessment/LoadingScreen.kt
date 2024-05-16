@@ -205,7 +205,7 @@ class LoadingScreen : AppCompatActivity() {
             val copyDirectory = File(applicationContext.filesDir, "cities-copy")
 
             if(!directory.exists() && copyDirectory.exists() && !copyDirectory.listFiles().isNullOrEmpty()) {
-                Log.d("Loading copy of cities")
+                Log.d("LoadingDebug","Loading copy of cities")
                 loadCities()
             }
 
