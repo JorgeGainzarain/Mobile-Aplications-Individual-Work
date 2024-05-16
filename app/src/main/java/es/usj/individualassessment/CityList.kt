@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import es.usj.individualassessment.Classes.City
+import es.usj.individualassessment.Classes.Comparators.CityComparator
 import es.usj.individualassessment.databinding.ActivityCityListBinding
 import es.usj.individualassessment.databinding.ListItemBinding
 
@@ -36,6 +37,9 @@ class CityList : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(view.root)
 
+        // Sort cities
+        listCities.sortWith { c1, c2 -> CityComparator().compareTimeZone(c1, c2) }
+
         // Create adapter with custom layout and set it to the ListView
         val adapter = CityListAdapter(listCities)
         view.CitiesList.adapter = adapter
@@ -47,7 +51,6 @@ class CityList : AppCompatActivity() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
             //SETUP
-
             val binding: ListItemBinding
             val rowView: View
 
@@ -61,22 +64,22 @@ class CityList : AppCompatActivity() {
             }
 
             // VARS and VALS
-
             val city = getItem(position) ?: throw Error("City not found")
             var name = city.name
 
             // SET VALUES
-
             if(city.province != null) {
                 name += ", ${city.province}"
             }
+
 
             binding.cityName.text = name
 
             binding.countryName.text = city.country
             binding.Time.text = city.getTimeString()
+            binding.weather.setImageResource(R.drawable.clear_night)
 
-            val (color, squareBorder, roundedBorder, background) = if (city.isDay()) {
+            val (color, squareBorder, roundedBorder, background) = if (city.isDay) {
                 dayTheme
             } else {
                 nightTheme

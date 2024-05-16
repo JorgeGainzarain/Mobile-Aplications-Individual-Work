@@ -13,15 +13,18 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import es.usj.individualassessment.Classes.Comparators.CalendarComparator;
+
 public class City {
     private String name;
     private String province;
     private String country;
     private double latitude;
     private double longitude;
-    //private Forecast currConditions;
     private Calendar calendar;
     private History history;
+
+    private int tzOffset;
 
     private Day today;
 
@@ -37,7 +40,8 @@ public class City {
             this.province = (addressParts.length == 3) ? addressParts[1] : null;
             this.country = (addressParts.length == 3) ? addressParts[2] : addressParts[1];
 
-            this.calendar = getLocalCalendar(jsonObject.getInt("tzoffset"), new Date());
+            this.tzOffset = jsonObject.getInt("tzoffset");
+            this.calendar = getLocalCalendar(this.tzOffset, new Date());
 
             Log.d("JsonDebug", this.name);
             this.history = new History(jsonObject.getJSONArray("days"), this.calendar);
@@ -56,19 +60,17 @@ public class City {
         }
         resolvedAddress.append(", ").append(country);
 
-        JSONObject jsonObject = new JSONObject()
+        return new JSONObject()
                 .put("address", name)
                 .put("latitude", latitude)
                 .put("longitude", longitude)
                 .put("resolvedAddress", resolvedAddress.toString())
                 .put("tzoffset", calendar.getTimeZone().getRawOffset() / 3600000)
                 .put("days", history.toJSON());
-
-        return jsonObject;
     }
 
-    public Day getLastHistoryDay() {
-        return history.getLastHistoryDay();
+    public Day firstPredictionDay() {
+        return history.getFirstPredictionDay();
     }
 
     public void addData(String jsonString) {
@@ -106,7 +108,7 @@ public class City {
             int second1 = cal1.get(Calendar.SECOND);
 
             //int comparation = compareTime(this.calendar, cal1);
-            int comparation = new CalendarTimeComparator().compare(this.calendar,cal1);
+            int comparation = new CalendarComparator().compareTime(this.calendar,cal1);
 
             Log.d("DateTime", "City: " + name + " -> "
                     + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND)
@@ -155,4 +157,12 @@ public class City {
     public Calendar getCalendar() {
         return calendar;
     }
+
+    public int getTzOffset() {
+        return tzOffset;
+    }
+    public void setTzOffset(int tzOffset) {
+        this.tzOffset = tzOffset;
+    }
+
 }

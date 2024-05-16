@@ -4,7 +4,6 @@ package es.usj.individualassessment
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -20,6 +19,8 @@ import es.usj.individualassessment.databinding.ActivityLoadingScreenBinding
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -71,9 +72,11 @@ class LoadingScreen : AppCompatActivity() {
         setContentView(view.root)
         intent = Intent(this, MainMenu::class.java)
 
+
         tasks = arrayOf(
-            fetchLocation(),
-            loadCities()
+            //fetchLocation(),
+            loadCities(),
+            saveCopy()
         )
 
         // When all the tasks are finished start the MainMenu
@@ -87,6 +90,60 @@ class LoadingScreen : AppCompatActivity() {
             }
         }
     }
+
+    private fun saveCopy(): CompletableFuture<Void> {
+        return CompletableFuture.runAsync {
+            val citiesDirectory = File(applicationContext.filesDir, "cities")
+            val copyDirectory = File(applicationContext.filesDir, "cities-copy")
+
+            // Create the copy directory if it doesn't exist
+            if (!copyDirectory.exists()) {
+                copyDirectory.mkdirs()
+            }
+
+            for (city in listCities) {
+                try {
+                    val file = File(citiesDirectory, "$city.json")
+                    val newFile = File(copyDirectory, "$city.json")
+
+                    // Check if the new file already exists
+                    if (!newFile.exists()) {
+                        Files.copy(file.toPath(), newFile.toPath())
+                    }
+
+                } catch (e: Exception) {
+                    println("Error occurred while copying file: ${e.message}")
+                }
+            }
+        }
+    }
+    private fun loadCopy(): CompletableFuture<Void> {
+        return CompletableFuture.runAsync {
+            val citiesDirectory = File(applicationContext.filesDir, "cities")
+            val copyDirectory = File(applicationContext.filesDir, "cities-copy")
+
+            // Create the cities directory if it doesn't exist
+            if (!citiesDirectory.exists()) {
+                citiesDirectory.mkdirs()
+            }
+
+            for (file in copyDirectory.listFiles()!!) {
+                try {
+                    val newFile = File(citiesDirectory, "${file.name}.json")
+
+                    // Check if the new file already exists
+                    if (!newFile.exists()) {
+                        Files.copy(file.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                        println("File copied successfully: ${file.name} -> ${newFile.name}")
+                    }
+
+                } catch (e: Exception) {
+                    println("Error occurred while copying file: ${e.message}")
+                }
+            }
+        }
+    }
+
     private fun fetchLocation(): CompletableFuture<Void> {
         Log.d("LocationDebug", "Fetching Start")
 
@@ -145,6 +202,13 @@ class LoadingScreen : AppCompatActivity() {
         return CompletableFuture.runAsync {
 
             val directory = File(applicationContext.filesDir, "cities")
+            val copyDirectory = File(applicationContext.filesDir, "cities-copy")
+
+            if(!directory.exists() && copyDirectory.exists() && !copyDirectory.listFiles().isNullOrEmpty()) {
+                Log.d("Loading copy of cities")
+                loadCities()
+            }
+
 
             if (directory.exists() && !directory.listFiles().isNullOrEmpty()) {
 
@@ -165,7 +229,7 @@ class LoadingScreen : AppCompatActivity() {
                     // We wont update it in the same day as that would require to run the api each time we load the app
                     // So we will only update it once per day as minimum, if a few hours have passed we will keep the predictions
 
-                    val lastHistDay = LocalDate.parse(city.lastHistoryDay.dateString, formatter)
+                    val lastHistDay = LocalDate.parse(city.firstPredictionDay().dateString, formatter)
                     // If it has passed 1 or more days since last historical (Not predicted) Day we update it
                     Log.d("LogicDebug", "$todayDate -> $lastHistDay")
                     if (todayDate.isAfter(lastHistDay)) {
@@ -179,7 +243,8 @@ class LoadingScreen : AppCompatActivity() {
                         saveCityData(city.name, city.toJSON().toString())
                     }
                     Log.d("LogicDebug", "City ${city.name} loaded")
-                    Log.d("LogicDebug", "\n")
+                    Log.d("JSONDebug", city.toJSON().toString())
+                    //saveCityData(city.name, city.toJSON().toString())
                 }
             }
             else {
@@ -197,6 +262,10 @@ class LoadingScreen : AppCompatActivity() {
 
                 // load the cities from the jsons to listCities
                 listCities = getCities(applicationContext)
+                for (city in listCities) {
+                    saveCityData(city.name, city.toJSON().toString());
+                }
+
             }
         }
     }
@@ -236,11 +305,13 @@ class LoadingScreen : AppCompatActivity() {
     private fun saveCityData(city: String, data: String): CompletableFuture<Void> {
         return CompletableFuture.runAsync {
             try {
+                Log.d("Debug", "Saving city $city")
                 val directory = File(applicationContext.filesDir, "cities")
 
                 val file = File(directory, "$city.json")
                 val outputStream = FileOutputStream(file)
                 outputStream.write(data.toByteArray())
+
                 outputStream.close()
 
                 Log.d("Debug:", "City: $city saved successfully")
