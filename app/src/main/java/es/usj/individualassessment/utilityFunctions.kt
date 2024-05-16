@@ -4,12 +4,9 @@ import android.content.Context
 import android.util.Log
 import es.usj.individualassessment.Classes.City
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
-import kotlin.math.pow
 
 var listCities: MutableList<City> = mutableListOf()
 
@@ -34,6 +31,7 @@ fun getCities(context: Context): MutableList<City> {
     return cities
 }
 
+/*
 fun resetDir(dirName: String, context : Context) {
     // If directory already has files reset it
     val directory = File(context.filesDir, dirName)
@@ -46,9 +44,11 @@ fun resetDir(dirName: String, context : Context) {
     else {
         directory.mkdirs()
     }
-
 }
 
+ */
+
+/*
 fun compareDate(date1: Date, date2: Date): Int {
     val cal1 = Calendar.getInstance()
     cal1.time = date1
@@ -79,6 +79,10 @@ fun compareDate(date1: Date, date2: Date): Int {
     }
 }
 
+
+*/
+
+/*
 fun compareTime(cal1: Calendar, cal2: Calendar): Int {
 
     val hour1 = cal1.get(Calendar.HOUR_OF_DAY)
@@ -106,11 +110,12 @@ fun compareTime(cal1: Calendar, cal2: Calendar): Int {
         return 0
     }
 }
+ */
 
 fun getLocalCalendar(tzOffset: Int, date: Date): Calendar {
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("GTM"))
     calendar.time = date
-    calendar.add(Calendar.HOUR_OF_DAY, tzOffset);
+    calendar.add(Calendar.HOUR_OF_DAY, tzOffset)
     return calendar
 }
 

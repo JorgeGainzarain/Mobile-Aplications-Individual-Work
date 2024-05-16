@@ -1,6 +1,5 @@
 package es.usj.individualassessment.Classes;
 
-import static es.usj.individualassessment.UtilityFunctionsKt.compareDate;
 
 import android.util.Log;
 
@@ -11,13 +10,16 @@ import org.json.JSONObject;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class History {
     private final List<Day> days;
+    private final Calendar cal;
 
     public History(JSONArray jsonDays, Calendar calendar) throws JSONException, ParseException {
+        this.cal = calendar;
 
         this.days = new ArrayList<>();
 
@@ -66,14 +68,17 @@ public class History {
     }
 
 
-    public Day getToday(Calendar calendar) {
+    public Day getToday(Calendar cal1) {
         Log.d("PerformanceDebug", "getTodayLoop called");
+        Comparator<Calendar> dateComparator = new CalendarDateComparator();
         for (Day day : days) {
-            if (compareDate(day.getDate(), calendar.getTime()) == 0) {
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTime(day.getDate());
+            if (dateComparator.compare(cal1, cal2) == 0) {
                 return day;
             }
         }
-        throw new Error("Day " + calendar.getTime() + "Not Found");
+        return null; // Return null if today is not found
     }
 
     public void addNewDays(JSONArray newJsonDays) throws JSONException, ParseException {
@@ -91,19 +96,8 @@ public class History {
         days.sort(new DaysComparator());
     }
 
-}
-
-class DaysComparator implements java.util.Comparator<Day> {
-    @Override
-    public int compare(Day a, Day b) {
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(a.getDate());
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(b.getDate());
-
-        if (cal1.after(cal2)) return 1;
-        else if (cal1.before(cal2)) return -1;
-        else return 0;
+    public Calendar getCal() {
+        return cal;
     }
 }
 

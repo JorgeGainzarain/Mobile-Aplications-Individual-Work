@@ -1,6 +1,5 @@
 package es.usj.individualassessment.Classes;
 
-import static es.usj.individualassessment.UtilityFunctionsKt.compareTime;
 import static es.usj.individualassessment.UtilityFunctionsKt.getLocalCalendar;
 
 import android.annotation.SuppressLint;
@@ -13,7 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class City {
     private String name;
@@ -43,7 +41,7 @@ public class City {
 
             Log.d("JsonDebug", this.name);
             this.history = new History(jsonObject.getJSONArray("days"), this.calendar);
-            getUpdatedToday();
+            updateToday();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,10 +71,6 @@ public class City {
         return history.getLastHistoryDay();
     }
 
-    public List<Day> getDays() {
-        return history.getDays();
-    }
-
     public void addData(String jsonString) {
         try {
             this.history.addNewDays(new JSONObject(jsonString).getJSONArray("days"));
@@ -95,9 +89,6 @@ public class City {
     }
 
     public boolean isDay() {
-
-        //Log.d("DateTime", "City: " + name + " -> " + getTimeString() + " -> "
-        //        + "(" + getSunrise() + " , " + getSunset() + ")" );
         return !before(getSunrise()) && before(getSunset());
     }
 
@@ -112,14 +103,16 @@ public class City {
 
             int hour1 = cal1.get(Calendar.HOUR_OF_DAY);
             int minute1 = cal1.get(Calendar.MINUTE);
+            int second1 = cal1.get(Calendar.SECOND);
 
-            int comparation = compareTime(this.calendar, cal1);
+            //int comparation = compareTime(this.calendar, cal1);
+            int comparation = new CalendarTimeComparator().compare(this.calendar,cal1);
 
             Log.d("DateTime", "City: " + name + " -> "
-                    + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE)
-                    + " -> " + hour1 + ":" + minute1 + " -> " + comparation );
+                    + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND)
+                    + " -> " + hour1 + ":" + minute1 + ":" + second1 + " -> " + comparation );
 
-            return comparation == -1;
+            return comparation < 0; // (-1) -> Before
 
 
         } catch (ParseException e) {
@@ -136,9 +129,8 @@ public class City {
     }
 
     // Getters and setters
-    public Day getUpdatedToday() {
+    public void updateToday() {
         this.today = history.getToday(calendar);
-        return this.today;
     }
     public String getName() {
         return name;

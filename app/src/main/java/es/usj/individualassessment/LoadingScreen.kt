@@ -1,12 +1,15 @@
 package es.usj.individualassessment
 
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -33,7 +36,7 @@ class LoadingScreen : AppCompatActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
-    private var currentLocation: Location? = null
+    //private var currentLocation: Location? = null
 
     private val cities = listOf(
         "Los Angeles",
@@ -69,7 +72,7 @@ class LoadingScreen : AppCompatActivity() {
         intent = Intent(this, MainMenu::class.java)
 
         tasks = arrayOf(
-            //fetchLocation(),
+            fetchLocation(),
             loadCities()
         )
 
@@ -84,18 +87,30 @@ class LoadingScreen : AppCompatActivity() {
             }
         }
     }
-
-    @SuppressLint("MissingPermission")
     private fun fetchLocation(): CompletableFuture<Void> {
-        Log.d("LocationDebug", "Fetching  Start")
+        Log.d("LocationDebug", "Fetching Start")
+
         val ret = CompletableFuture<Void>()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            requestLocationUpdates(ret)
+        }
+        else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                REQUEST_LOCATION_PERMISSIONS
+            )
+        }
 
+        return ret
+    }
+    private fun requestLocationUpdates(ret: CompletableFuture<Void>) {
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000)
             .setWaitForAccurateLocation(false)
-            .setMinUpdateIntervalMillis(1000)
-            .setMaxUpdateDelayMillis(3000)
             .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
             .build()
 
@@ -111,16 +126,20 @@ class LoadingScreen : AppCompatActivity() {
                     intent.putExtra("latitude", latitude)
                     intent.putExtra("longitude", longitude)
 
+                    fusedLocationProviderClient.removeLocationUpdates(this)
                     ret.complete(null)
                 }
             }
         }
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null)
-            .continueWith {             // Remove location callback
-                fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-            }
-        return ret
 
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        {
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        }
+        else {
+            Log.d("LocationDebug", "Error permisson")
+        }
     }
     private fun loadCities(): CompletableFuture<Void> {
         return CompletableFuture.runAsync {
@@ -188,8 +207,8 @@ class LoadingScreen : AppCompatActivity() {
                 "/${startDay}/${endDay}?unitGroup=metric&include=days&" +
                 "key=${apiKey}&contentType=json"
 
-        val todayURL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
-                "${city}/today?unitGroup=metric&include=days%2Chours&key=${apiKey}&contentType=json"
+        //val todayURL = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" +
+        //        "${city}/today?unitGroup=metric&include=days%2Chours&key=${apiKey}&contentType=json"
 
 
 
@@ -232,6 +251,9 @@ class LoadingScreen : AppCompatActivity() {
         }
     }
 
+    companion object {
+        private const val REQUEST_LOCATION_PERMISSIONS = 1001
+    }
 
 }
 
