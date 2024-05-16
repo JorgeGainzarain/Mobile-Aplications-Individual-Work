@@ -1,7 +1,6 @@
 package es.usj.individualassessment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +41,7 @@ class CityList : AppCompatActivity() {
         view.CitiesList.adapter = adapter
     }
 
-    inner class CityListAdapter(private val cities: List<City>) :
+    inner class CityListAdapter(cities: List<City>) :
         ArrayAdapter<City>(this, R.layout.list_item, cities) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -82,9 +81,6 @@ class CityList : AppCompatActivity() {
             } else {
                 nightTheme
             }
-
-            // Debug logs
-            //Log.d("CityListAdapter", "City: ${city.name}, isDay: ${city.isDay()}")
 
             binding.relativelayout.setBackgroundResource(background)
 
