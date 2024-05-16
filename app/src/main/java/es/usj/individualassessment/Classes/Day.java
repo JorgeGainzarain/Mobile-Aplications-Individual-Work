@@ -16,6 +16,7 @@ public class Day {
     private String sunrise;
     private String sunset;
     private Date date;
+    private String icon;
     //private List<Hour> hours;
     private boolean prediction;
 
@@ -23,7 +24,15 @@ public class Day {
 
         //hours = new ArrayList<>();
 
-        this.prediction = false;
+        if(jsonObject.optBoolean("isPrediction")) {
+            this.prediction = jsonObject.getBoolean("isPreciction");
+        }
+        else {
+            this.prediction = false;
+        }
+
+
+        this.icon = jsonObject.getString("icon");
         this.sunrise = jsonObject.getString("sunrise");
         this.sunset = jsonObject.getString("sunset");
 
@@ -51,7 +60,9 @@ public class Day {
         JSONObject jsonObject = new JSONObject()
                 .put("sunrise", sunrise)
                 .put("sunset", sunset)
-                .put("datetime", dateString);
+                .put("datetime", dateString)
+                .put("isPrediction", isPrediction())
+                .put("icon", icon);
 
         /*
         JSONArray jsonHours = new JSONArray();
@@ -101,5 +112,13 @@ public class Day {
 
     public void setPrediction(boolean prediction) {
         this.prediction = prediction;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
