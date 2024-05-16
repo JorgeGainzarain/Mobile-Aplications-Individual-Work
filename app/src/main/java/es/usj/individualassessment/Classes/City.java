@@ -106,14 +106,18 @@ public class City {
         try {
             Date date = new SimpleDateFormat("hh:mm:ss").parse(time);
 
-            Calendar cal1 = (Calendar) this.calendar.clone();
+            Calendar cal1 = Calendar.getInstance();
             assert date != null;
             cal1.setTime(date);
 
+            int hour1 = cal1.get(Calendar.HOUR_OF_DAY);
+            int minute1 = cal1.get(Calendar.MINUTE);
+
             int comparation = compareTime(this.calendar, cal1);
 
-            Log.d("DateTime", "City: " + name + " -> " + calendar.getTime() + " -> "
-                    + "(" + cal1.getTime() + ")" );
+            Log.d("DateTime", "City: " + name + " -> "
+                    + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE)
+                    + " -> " + hour1 + ":" + minute1 + " -> " + comparation );
 
             return comparation == -1;
 
