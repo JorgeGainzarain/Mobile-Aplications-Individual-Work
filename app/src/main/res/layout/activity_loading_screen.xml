@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:background="@drawable/background"
         tools:context=".LoadingScreen">
 
         <TextView
@@ -26,7 +27,7 @@
             android:layout_height="177dp"
             android:layout_gravity="center"
             android:layout_below="@id/app_name"
-        android:src="@android:drawable/btn_star_big_on" />
+        android:src="@drawable/loading" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -1,18 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:padding="16dp">
 
-    <!-- Display the current GPS location information -->
-    <TextView
-        android:id="@+id/textViewLocation"
-        android:layout_width="wrap_content"
+    <!-- Display the current GPS location information inside a square -->
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="23sp"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" />
+        android:background="@drawable/rounded_border_night"
+        android:layout_alignParentTop="true">
+
+
+
+        <TextView
+            android:id="@+id/textViewLocation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:gravity="center_horizontal"
+            android:text="Location\n\n"
+            android:textSize="23sp" />
+
+
+    </FrameLayout>
 
     <!-- Menu to access different features -->
     <LinearLayout
@@ -25,24 +38,25 @@
         <Button
             android:id="@+id/CityList"
             android:layout_width="200dp"
-            android:background="@drawable/rounded_border_night"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_marginBottom="16dp"
+            android:textColor="@color/black"
+            android:background="@drawable/rounded_border_night"
             android:text="CityList"
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/buttonFeature2"
+            android:id="@+id/favCities"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_border_night"
+            android:layout_height="60dp"
+            android:textColor="@color/black"
             android:layout_marginBottom="16dp"
-            android:text="Feature 2"
+            android:background="@drawable/rounded_border_night"
+            android:text="Favourite Cities"
             android:textSize="16sp" />
 
         <!-- Add more buttons or elements for additional features -->
 
     </LinearLayout>
-
 
 </RelativeLayout>

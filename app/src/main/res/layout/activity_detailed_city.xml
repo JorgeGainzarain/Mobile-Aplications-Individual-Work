@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- City Information -->
+    <TextView
+        android:id="@+id/textViewNameProvinceCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="City Name, Province, Country"
+        android:textSize="18sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Current Date -->
+    <TextView
+        android:id="@+id/textViewDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Date"
+        android:textSize="16sp"
+        android:layout_below="@id/textViewNameProvinceCountry"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Latitude and Longitude -->
+    <TextView
+        android:id="@+id/textViewLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Latitude, Longitude"
+        android:textSize="16sp"
+        android:layout_marginTop="32dp"/>
+
+    <!-- Day Report -->
+    <TextView
+        android:id="@+id/textViewDayReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Day Report"
+        android:textSize="18sp"
+        android:layout_below="@id/textViewLocation"
+        android:layout_marginTop="32dp"/>
+
+    <!-- Weather Report Placeholder -->
+    <!-- Add your weather report UI components here -->
+    <!-- Example: ImageView, TextView, etc. -->
+
+</RelativeLayout>

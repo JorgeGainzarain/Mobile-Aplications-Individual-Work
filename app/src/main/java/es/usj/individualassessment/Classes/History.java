@@ -26,25 +26,12 @@ public class History {
         this.days = new ArrayList<>();
 
         for (int i = 0; i < jsonDays.length(); i++) {
-            Log.d("JsonDebug", i + "->" + jsonDays.getJSONObject(i).toString());
-            Day day = new Day(jsonDays.getJSONObject(i));
+            //Log.d("JsonDebug", i + "->" + jsonDays.getJSONObject(i).toString());
+            Day day = new Day(jsonDays.getJSONObject(i), calendar);
 
-            if(!jsonDays.getJSONObject(i).optBoolean("isPrediction")) {
-                Log.d("Prediction", "Prediction json not found");
-                Calendar auxCal = (Calendar) calendar.clone();
-                String auxDate = day.getDateString();
-
-                String[] parts = auxDate.split("-");
-                auxCal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
-                auxCal.set(Calendar.MINUTE, Integer.parseInt(parts[1]));
-                auxCal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[2]));
-
-                if( new CalendarComparator().compareDate(this.cal,auxCal) <= 0) {
-                    day.setPrediction(true);
-                }
-            }
-            else {
-                Log.d("Prediction", "Prediction json found");
+            // If there's not a isPrediction in the json (First time a data is included won't have a isPrediction)
+            if(!jsonDays.getJSONObject(i).has("isPrediction")) {
+                day.setPrediction(isPrediction(calendar, day));
             }
 
             days.add(day);
@@ -62,20 +49,36 @@ public class History {
         return jsonArray;
     }
 
-    public List<Day> getDays() {
-        return days;
+    public void replaceDay(Day day, Day newDay) {
+        Log.d("UpdateDebug", "Test Control 1");
+        int index = days.indexOf(day);
+        days.remove(index);
+        days.set(index, newDay);
+        Log.d("UpdateDebug", "Test Control 2");
+    }
+
+    public boolean isPrediction(Calendar calendar, Day day) {
+        //Log.d("Prediction Message Test", "Prediction json not found -> " + day.getDateString());
+        Calendar auxCal = (Calendar) calendar.clone();
+        String auxDate = day.getDateString();
+
+        String[] parts = auxDate.split("-");
+        auxCal.set(Calendar.YEAR, Integer.parseInt(parts[0]));
+        auxCal.set(Calendar.MINUTE, Integer.parseInt(parts[1]));
+        auxCal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(parts[2]));
+
+        return new CalendarComparator().compareDate(this.cal,auxCal) <= 0;
     }
 
     public Day getFirstPredictionDay() {
-        Day lastDay = null;
 
         for (Day day : days) {
-            Log.d("DebugPrediction", day.getDateString() + " -> " + day.isPrediction());
+            //Log.d("DebugPrediction", day.getDateString() + " -> " + day.isPrediction());
             if (day.isPrediction()) {
                 return day;
             }
         }
-        return lastDay;
+        return null;
     }
 
 
@@ -84,17 +87,28 @@ public class History {
         for (Day day : days) {
             Calendar cal2 = Calendar.getInstance();
             cal2.setTime(day.getDate());
+
+            boolean bool = new CalendarComparator().compareDate(cal1,cal2) == 0;
+            //Log.d("Control", "----->" + cal1.getTime());
+
+            //Log.d("Control", "Control message getToday ("
+            //        + cal1.get(Calendar.YEAR) + "-" + cal1.get(Calendar.MONTH) + "-" + cal1.get(Calendar.DAY_OF_MONTH) + ","
+            //        + cal2.get(Calendar.YEAR) + "-" + cal2.get(Calendar.MONTH) + "-" + cal2.get(Calendar.DAY_OF_MONTH) + ")"
+            //        + " -> " + bool);
+
+            cal2.setTime(day.getDate());
             if (new CalendarComparator().compareDate(cal1,cal2) == 0) {
                 return day;
             }
         }
-        return null; // Return null if today is not found
+        //Log.d("Control", "Control null return");
+        throw new Error("Today not found"); // Throw an error if not found
     }
 
     public void addNewDays(JSONArray newJsonDays) throws JSONException, ParseException {
         for (int i = 0; i < newJsonDays.length(); i++) {
             JSONObject jsonObject = newJsonDays.getJSONObject(i);
-            days.add(new Day(jsonObject));
+            days.add(new Day(jsonObject, this.cal));
 
         }
         sortDays();
