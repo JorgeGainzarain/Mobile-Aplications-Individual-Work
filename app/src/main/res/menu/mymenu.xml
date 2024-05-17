@@ -1,16 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/file"
-        app:showAsAction="always"
-        android:icon="@drawable/search"
-        android:title="A" >
-        <!-- "file" submenu -->
+
+    <item android:id="@+id/refresh"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/refresh"
+        android:title="Refresh" >
+    </item>
+
+    <item android:id="@+id/sort"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/sort_icon"
+        android:title="Sort" >
         <menu>
-            <item android:id="@+id/create_new"
-                android:title="B" />
-            <item android:id="@+id/open"
-                android:title="C" />
+            <item android:id="@+id/sort_by_address"
+                android:title="Sort by Address" />
+            <item android:id="@+id/sort_by_time"
+                android:title="Sort by Time" />
+            <item android:id="@+id/sort_by_timezone"
+                android:title="Sort by Time Zone" />
+            <item android:id="@+id/sort_by_weather"
+                android:title="Sort by Weather" />
+            <item android:id="@+id/sort_by_is_day"
+                android:title="Sort by Day/Night" />
         </menu>
     </item>
+
+    <item
+        android:id="@+id/filter"
+        app:showAsAction="ifRoom"
+        android:title="Filter">
+        <menu>
+            <item
+                android:id="@+id/filter_by_country"
+                android:title="CountryName" />
+            <item
+                android:id="@+id/filter_by_city"
+                android:title="CityName" />
+            <item
+                android:id="@+id/filter_by_time"
+                android:title="Time">
+                <menu>
+                    <item
+                        android:id="@+id/filter_after"
+                        android:title="After" />
+                    <item
+                        android:id="@+id/filter_before"
+                        android:title="Before" />
+                </menu>
+            </item>
+        </menu>
+    </item>
+
+
 </menu>

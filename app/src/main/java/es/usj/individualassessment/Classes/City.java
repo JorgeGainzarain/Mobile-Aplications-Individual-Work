@@ -1,7 +1,5 @@
 package es.usj.individualassessment.Classes;
 
-import static es.usj.individualassessment.UtilityFunctionsKt.getLocalCalendar;
-
 import android.annotation.SuppressLint;
 import android.util.Log;
 
@@ -12,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import es.usj.individualassessment.Classes.Comparators.CalendarComparator;
 
@@ -23,10 +22,9 @@ public class City {
     private double longitude;
     private Calendar calendar;
     private History history;
-
     private int tzOffset;
-
     private Day today;
+    private Boolean favourite;
 
 
     public City(String jsonString) {
@@ -43,16 +41,24 @@ public class City {
             this.tzOffset = jsonObject.getInt("tzoffset");
             this.calendar = getLocalCalendar(this.tzOffset, new Date());
 
-            Log.d("JsonDebug", this.name);
-            this.history = new History(jsonObject.getJSONArray("days"), this.calendar);
-            updateToday();
+            //Log.d("Prediction Message Test", this.name);
+            this.history = new History(jsonObject.getJSONArray("days"), (Calendar) this.calendar.clone());
+            Log.d("Control", this.name + " -> " + this.calendar.getTime() + " -> (" + this.tzOffset + ")");
+            this.today = history.getToday((Calendar) this.calendar.clone());
+
+            if(jsonObject.has("fav")) {
+                this.favourite = jsonObject.getBoolean("fav");
+            }
+            else {
+                this.favourite = false;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public JSONObject toJSON() throws JSONException {
+    public JSONObject toJSON() {
         StringBuilder resolvedAddress = new StringBuilder();
         resolvedAddress.append(name);
         if (province != null) {
@@ -60,13 +66,20 @@ public class City {
         }
         resolvedAddress.append(", ").append(country);
 
-        return new JSONObject()
-                .put("address", name)
-                .put("latitude", latitude)
-                .put("longitude", longitude)
-                .put("resolvedAddress", resolvedAddress.toString())
-                .put("tzoffset", calendar.getTimeZone().getRawOffset() / 3600000)
-                .put("days", history.toJSON());
+        try {
+            return new JSONObject()
+                    .put("address", name)
+                    .put("latitude", latitude)
+                    .put("longitude", longitude)
+                    .put("resolvedAddress", resolvedAddress.toString())
+                    .put("tzoffset", calendar.getTimeZone().getRawOffset() / 3600000)
+                    .put("days", history.toJSON())
+                    .put("fav", favourite);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public Day firstPredictionDay() {
@@ -122,6 +135,13 @@ public class City {
         }
     }
 
+    public static Calendar getLocalCalendar(int tzOffset, Date date) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, tzOffset);
+        return calendar;
+    }
+
     public String getSunrise() {
         return today.getSunrise();
     }
@@ -131,9 +151,6 @@ public class City {
     }
 
     // Getters and setters
-    public void updateToday() {
-        this.today = history.getToday(calendar);
-    }
     public String getName() {
         return name;
     }
@@ -164,5 +181,19 @@ public class City {
     public void setTzOffset(int tzOffset) {
         this.tzOffset = tzOffset;
     }
+    public Day getToday() {return today;}
+
+    public Boolean isFavourite() {return favourite;}
+    public void setFavourite(Boolean favourite) {
+        this.favourite = favourite;
+        ListCities.instance.saveCity(this);
+    }
+
+    public void updateToday(Day newDay) {
+        Log.d("UpdateDebug", "Test Control 0");
+        history.replaceDay(today, newDay);
+        this.today = newDay;
+    }
+
 
 }

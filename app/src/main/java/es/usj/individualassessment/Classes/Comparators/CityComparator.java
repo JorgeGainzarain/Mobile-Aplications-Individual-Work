@@ -44,6 +44,12 @@ public class CityComparator implements Comparator<City> {
     public int compareTimeZone(City c1, City c2) {
         return c1.getTzOffset() - c2.getTzOffset();
     }
+    public int compareWeather(City c1, City c2) {
+        return c1.getToday().getIcon().compareTo(c2.getToday().getIcon());
+    }
+    public int compareIsDay(City c1, City c2) {
+        return Boolean.compare(c2.isDay(), c1.isDay());
+    }
 
 
 }
