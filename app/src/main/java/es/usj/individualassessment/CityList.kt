@@ -282,6 +282,14 @@ class CityList : AppCompatActivity() {
             binding.countryName.setTextColor(mycolor)
             binding.Time.setTextColor(mycolor)
 
+            // Set the click listener to start DetailedCity activity
+            rowView.setOnClickListener {
+                val intent = Intent(context, DetailedCity::class.java)
+                val index = ListCities.instance.indexOf(city)
+                intent.putExtra("CITY_INDEX", index)
+                context.startActivity(intent)
+            }
+
             return rowView
         }
         private fun updateFavourite(binding: ListItemBinding, city : City) {

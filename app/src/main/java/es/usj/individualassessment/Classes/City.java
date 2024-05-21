@@ -183,6 +183,13 @@ public class City {
     }
     public Day getToday() {return today;}
 
+    public Double getAvgWind() {
+        return history.getAvgWind();
+    }
+
+    public Double getAvgTemp() {return history.getAvgTemp();}
+    public Double getAvgDew() {return history.getAvgDew();}
+
     public Boolean isFavourite() {return favourite;}
     public void setFavourite(Boolean favourite) {
         this.favourite = favourite;
