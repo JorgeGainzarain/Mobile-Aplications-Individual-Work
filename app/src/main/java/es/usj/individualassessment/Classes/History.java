@@ -41,6 +41,33 @@ public class History {
 
     }
 
+    public Double getAvgWind() {
+        if (days == null || days.isEmpty()) return 0.0;
+        double totalWind = 0.0;
+        for (Day day : days) {
+            totalWind += day.getWindspeed();
+        }
+        return totalWind / days.size();
+    }
+
+    public Double getAvgTemp() {
+        if (days == null || days.isEmpty()) return 0.0;
+        double totalTemp = 0.0;
+        for (Day day : days) {
+            totalTemp += day.getTemp();
+        }
+        return totalTemp / days.size();
+    }
+
+    public Double getAvgDew() {
+        if (days == null || days.isEmpty()) return 0.0;
+        double totalDew = 0.0;
+        for (Day day : days) {
+            totalDew += day.getDew();
+        }
+        return totalDew / days.size();
+    }
+
     public JSONArray toJSON() throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (Day day : days) {
