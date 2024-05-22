@@ -5,6 +5,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/blue_white_gradient"
+    android:paddingEnd="13dp"
     tools:context=".LoginActivity">
 
     <LinearLayout
@@ -41,22 +43,30 @@
                 android:layout_gravity="center"
                 android:gravity="center">
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="10dp"
-                    app:srcCompat="@drawable/userv2reloaded" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/editTextText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:minHeight="48dp"
-                    android:text="Username" />
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:padding="10dp"
+                        android:paddingEnd="20dp"
+                        app:srcCompat="@drawable/userv2reloaded" />
+
+                    <EditText
+                        android:id="@+id/editTextText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        android:text="Username" />
+                </LinearLayout>
+
             </TableRow>
 
             <TableRow
@@ -64,21 +74,29 @@
                 android:layout_height="match_parent"
                 android:gravity="center">
 
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    app:srcCompat="@drawable/candadov2" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/editTextText2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:minHeight="48dp"
-                    android:text="Password" />
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:paddingEnd="23dp"
+                        app:srcCompat="@drawable/candadov2" />
+
+                    <EditText
+                        android:id="@+id/editTextText2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        android:text="Password" />
+                </LinearLayout>
+
             </TableRow>
 
             <TableRow
@@ -87,13 +105,31 @@
                 android:gravity="center"
                 android:padding="20dp">
 
-                <Button
-                    android:id="@+id/button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#3F51B5"
-                    android:text="Login"
-                    android:textAlignment="center" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:foregroundGravity="center_vertical|center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:backgroundTint="#3F51B5"
+                        android:text="Login"
+                        android:textAlignment="center" />
+
+                    <Button
+                        android:id="@+id/button2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:backgroundTint="#3F51B5"
+                        android:text="Register" />
+                </LinearLayout>
+
             </TableRow>
 
             <TableRow
