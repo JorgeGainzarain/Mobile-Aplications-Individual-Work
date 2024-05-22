@@ -20,9 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IndividualAssessment">
         <activity
-            android:name=".Chat"
-            android:exported="false" />
-        <activity
             android:name=".DetailedCity"
             android:exported="false" />
         <activity
