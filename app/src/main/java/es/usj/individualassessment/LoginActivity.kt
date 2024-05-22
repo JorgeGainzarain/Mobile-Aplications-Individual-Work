@@ -1,4 +1,4 @@
-package es.usj.individualassessment.Classes
+package es.usj.individualassessment
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
