@@ -55,6 +55,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="text"
+                    android:minHeight="48dp"
                     android:text="Username" />
             </TableRow>
 
@@ -76,6 +77,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="text"
+                    android:minHeight="48dp"
                     android:text="Password" />
             </TableRow>
 
