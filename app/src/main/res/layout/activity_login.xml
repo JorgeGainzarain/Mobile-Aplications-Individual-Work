@@ -23,6 +23,7 @@
             android:padding="20dp"
             android:text="Welcome To Weather Chat!"
             android:textAlignment="center"
+            android:textColor="#2B2B2B"
             android:textSize="20sp"
             android:textStyle="bold" />
 
