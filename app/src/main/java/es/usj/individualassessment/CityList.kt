@@ -290,6 +290,14 @@ class CityList : AppCompatActivity() {
                 context.startActivity(intent)
             }
 
+            // Set the click listener to start LoginActivity activity
+            binding.ivChatAccess.setOnClickListener {
+                val intent = Intent(context, DetailedCity::class.java)
+                val index = ListCities.instance.indexOf(city)
+                intent.putExtra("CITY_INDEX", index)
+                context.startActivity(intent)
+            }
+
             return rowView
         }
         private fun updateFavourite(binding: ListItemBinding, city : City) {
@@ -300,5 +308,6 @@ class CityList : AppCompatActivity() {
                 binding.favourite.setImageResource(R.drawable.starborder_icon)
             }
         }
+
     }
 }

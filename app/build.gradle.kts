@@ -55,4 +55,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
+    implementation ("com.squareup.moshi:moshi:1.12.0")
+    implementation ("com.squareup.moshi:moshi-kotlin:1.12.0")
+    implementation ("com.squareup.moshi:moshi-adapters:1.12.0")
 }

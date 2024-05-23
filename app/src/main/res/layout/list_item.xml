@@ -105,7 +105,7 @@
             android:background="@drawable/square_border_day"/>
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/ivChatAccess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
