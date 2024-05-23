@@ -119,8 +119,8 @@ class LoginActivity : AppCompatActivity() {
 
     private fun openChat(user: User){
         val intent = Intent(this, Chat::class.java)
-        val bundle = Bundle().apply { putSerializable("USER_OBJECT", user) }
-        intent.putExtras(bundle)
+        //val bundle = Bundle().apply { putSerializable("USER_OBJECT", user) }
+        //intent.putExtras(bundle)
         startActivity(intent)
     }
 

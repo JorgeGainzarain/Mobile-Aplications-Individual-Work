@@ -291,8 +291,9 @@ class CityList : AppCompatActivity() {
             }
 
             // Set the click listener to start LoginActivity activity
+            // Se accede a la actividad, pero luego cuando intento registro y accesso lanza la misma excepción
             binding.ivChatAccess.setOnClickListener {
-                val intent = Intent(context, DetailedCity::class.java)
+                val intent = Intent(context, LoginActivity::class.java)
                 val index = ListCities.instance.indexOf(city)
                 intent.putExtra("CITY_INDEX", index)
                 context.startActivity(intent)
@@ -307,6 +308,13 @@ class CityList : AppCompatActivity() {
             else {
                 binding.favourite.setImageResource(R.drawable.starborder_icon)
             }
+        }
+
+        private fun accessToCityDetails(city: City){
+            val intent = Intent(context, DetailedCity::class.java)
+            val index = ListCities.instance.indexOf(city)
+            intent.putExtra("CITY_INDEX", index)
+            context.startActivity(intent)
         }
 
     }
