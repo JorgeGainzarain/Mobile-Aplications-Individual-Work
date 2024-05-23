@@ -29,6 +29,12 @@
             android:name=".MainMenu"
             android:exported="false" />
         <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Chat"
+            android:exported="false" />
+        <activity
             android:name=".LoadingScreen"
             android:exported="true"
             android:theme="@style/Theme.IndividualAssessment">
