@@ -2,6 +2,7 @@ package es.usj.individualassessment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -81,21 +82,6 @@ class LoginActivity : AppCompatActivity() {
 
     /* Allow user login into the chat */
     private fun login(username: String, password: String){
-        /*
-        // Temporal auto login
-        val user = User(username, "$username@gmail.com", password)
-        User.setInstance(user) // Set the current user to this user
-        showMessage("Login Successful")
-        openChat(user)
-
-        val user = users.find { it.userName == username && it.password == password}
-        if(user != null){
-            showMessage("Login Successful")
-            openChat(user)
-        } else{
-            showMessage("Incorrect credentials")
-        }
-        */
 
         auth.signInWithEmailAndPassword("$username@example.com", password)
             .addOnCompleteListener(this) { task ->
@@ -119,9 +105,19 @@ class LoginActivity : AppCompatActivity() {
                     val firebaseUser = auth.currentUser
                     val user = User(username, "$username@example.com")
                     firebaseUser?.let {
+                        // Write user data to the database
                         database.child("users").child(it.uid).setValue(user)
-                        showMessage("Registration Successful")
-                        openChat(user)
+                            .addOnSuccessListener {
+                                // Log success message
+                                Log.d("DebugDB", "Registration Successful")
+                                showMessage("Registration Successful")
+                                openChat(user)
+                            }
+                            .addOnFailureListener { e ->
+                                // Log error message
+                                Log.e("DebugDB", "Registration Failed", e)
+                                showMessage("Registration Failed: ${e.message}")
+                            }
                     }
                 } else {
                     showMessage("Registration Failed: ${task.exception?.message}")

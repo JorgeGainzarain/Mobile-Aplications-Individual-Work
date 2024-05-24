@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "3632707506",
+    "firebase_url": "https://group-work-chat-default-rtdb.europe-west1.firebasedatabase.app/",
     "project_id": "group-work-chat",
     "storage_bucket": "group-work-chat.appspot.com"
   },
