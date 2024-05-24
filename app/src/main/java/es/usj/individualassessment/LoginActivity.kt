@@ -7,6 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import es.usj.individualassessment.Classes.City
@@ -19,8 +25,8 @@ class LoginActivity : AppCompatActivity() {
 
     private val view by lazy { ActivityLoginBinding.inflate(layoutInflater) }
     private lateinit var city: City
-    private val users = mutableListOf<User>()
-    private val jsonFilePath = "userList.json"
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,23 +38,24 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        //loadUsers(jsonFilePath)
+        auth = Firebase.auth
+        database = Firebase.database.reference
+
         getCityIndex()
         manageLoginDetails()
 
     }
 
     /* Get city details */
-    private fun getCityIndex(){
-        // Get the city index from the intent
+    private fun getCityIndex() {
         val cityIndex = intent.getIntExtra("CITY_INDEX", -1)
         if (cityIndex != -1) {
             city = ListCities.instance[cityIndex]
         } else {
-            // Handle the case where the index is invalid
             finish() // Close the activity if the index is invalid
         }
     }
+
 
     /* Manage user interactions with activity */
     private fun manageLoginDetails(){
@@ -57,28 +64,27 @@ class LoginActivity : AppCompatActivity() {
         var password: String
 
         view.buttonLogin.setOnClickListener {
-            username = view.tvLoginUsername.text.toString()
-            password = view.tvLoginPassword.text.toString()
+            username = view.tvLoginUsername.text.toString().trim()
+            password = view.tvLoginPassword.text.toString().trim()
             login(username, password)
         }
 
         view.buttonRegister.setOnClickListener {
-            username = view.tvLoginUsername.text.toString()
-            password = view.tvLoginPassword.text.toString()
+            username = view.tvLoginUsername.text.toString().trim()
+            password = view.tvLoginPassword.text.toString().trim()
             register(username, password)
         }
     }
 
     /* Allow user login into the chat */
     private fun login(username: String, password: String){
-
+        /*
         // Temporal auto login
         val user = User(username, "$username@gmail.com", password)
         User.setInstance(user) // Set the current user to this user
         showMessage("Login Successful")
         openChat(user)
 
-        /*
         val user = users.find { it.userName == username && it.password == password}
         if(user != null){
             showMessage("Login Successful")
@@ -88,53 +94,43 @@ class LoginActivity : AppCompatActivity() {
         }
         */
 
+        auth.signInWithEmailAndPassword("$username@example.com", password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    showMessage("Login Successful")
+                    user?.let { openChat(it) }
+                } else {
+                    showMessage("Login Failed: ${task.exception?.message}")
+                }
+            }
+
     }
 
     /* Allow user registration into the chat */
     private fun register(username: String, password: String){
-        val userExists = users.any { it.userName == username }
-        if(userExists){
-            showMessage("User already exists")
-        } else {
-            val user = User(username, username + "@example.com", password)
-            users.add(user)
-            saveUsersToFile(jsonFilePath)
-            showMessage("Registration Success")
-            openChat(user)
-        }
+        auth.createUserWithEmailAndPassword("$username@example.com", password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    val user = User(username, "$username@example.com", password)
+                    firebaseUser?.let {
+                        database.child("users").child(it.uid).setValue(user)
+                        showMessage("Registration Successful")
+                        openChat(it)
+                    }
+                } else {
+                    showMessage("Registration Failed: ${task.exception?.message}")
+                }
+            }
     }
 
-    /* Store users into the json file */
-    private fun loadUsers(filePath: String){
-        val file = File(filePath)
-        if(file.exists()){
-            val json = file.readText()
-            val moshi = Moshi.Builder().build()
-            val listType = com.squareup.moshi.Types.newParameterizedType(List::class.java, User::class.java)
-            val jsonAdapter: JsonAdapter<List<User>> = moshi.adapter(listType)
-            val loadedUsers = jsonAdapter.fromJson(json)
-            if(loadedUsers != null) users.addAll(loadedUsers)
-        }
-    }
-
-    private fun saveUsersToFile(filePath: String){
-        val file = File(filePath)
-        val moshi = Moshi.Builder().build()
-        val listType = com.squareup.moshi.Types.newParameterizedType(List::class.java, User::class.java)
-        val jsonAdapter: JsonAdapter<List<User>> = moshi.adapter(listType)
-        val json = jsonAdapter.toJson(users)
-        file.writeText(json)
-    }
-
-    private fun openChat(user: User){
+    private fun openChat(user: FirebaseUser) {
         val intent = Intent(this, Chat::class.java)
-        //intent.putExtra("CITY_INDEX", ListCities.instance.indexOf(city))
-        //val bundle = Bundle().apply { putSerializable("USER_OBJECT", user) }
-        //intent.putExtras(bundle)
         startActivity(intent)
     }
 
-    private fun showMessage(message: String){
+    private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
