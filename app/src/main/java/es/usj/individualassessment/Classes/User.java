@@ -6,6 +6,8 @@ import java.util.List;
 import es.usj.individualassessment.Classes.City;
 
 public class User implements Serializable {
+
+    private static User instance;
     private String userName;
     private String userMail;
     private String password;
@@ -14,6 +16,14 @@ public class User implements Serializable {
         this.userName = userName;
         this.userMail = userMail;
         this.password = password;
+    }
+
+    public static User getInstance() {
+        return instance;
+    }
+
+    public static void setInstance(User instance) {
+        User.instance = instance;
     }
 
     public String getUserName() {

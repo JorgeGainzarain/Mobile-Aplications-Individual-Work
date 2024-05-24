@@ -30,7 +30,7 @@ import java.util.Date
 class CityList : AppCompatActivity() {
 
     private val view by lazy { ActivityCityListBinding.inflate(layoutInflater) }
-    private lateinit var adapter: CityListAdapter
+    private lateinit var adapter: ChatAdapter
 
     private lateinit var listCities: MutableList<City>
 
@@ -79,7 +79,7 @@ class CityList : AppCompatActivity() {
 
 
         // Create adapter with custom layout and set it to the ListView
-        adapter = CityListAdapter(listCities)
+        adapter = ChatAdapter(listCities)
         view.CitiesList.adapter = adapter
 
 
@@ -220,7 +220,7 @@ class CityList : AppCompatActivity() {
     }
 
 
-    inner class CityListAdapter(cities: List<City>) :
+    inner class ChatAdapter(cities: List<City>) :
         ArrayAdapter<City>(this@CityList, R.layout.list_item, cities) {
 
         @SuppressLint("DiscouragedApi")

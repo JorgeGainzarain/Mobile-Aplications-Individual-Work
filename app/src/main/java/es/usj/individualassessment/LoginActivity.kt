@@ -32,7 +32,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        loadUsers(jsonFilePath)
+        //loadUsers(jsonFilePath)
         getCityIndex()
         manageLoginDetails()
 
@@ -71,6 +71,14 @@ class LoginActivity : AppCompatActivity() {
 
     /* Allow user login into the chat */
     private fun login(username: String, password: String){
+
+        // Temporal auto login
+        val user = User(username, "$username@gmail.com", password)
+        User.setInstance(user) // Set the current user to this user
+        showMessage("Login Successful")
+        openChat(user)
+
+        /*
         val user = users.find { it.userName == username && it.password == password}
         if(user != null){
             showMessage("Login Successful")
@@ -78,6 +86,7 @@ class LoginActivity : AppCompatActivity() {
         } else{
             showMessage("Incorrect credentials")
         }
+        */
 
     }
 
@@ -119,6 +128,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun openChat(user: User){
         val intent = Intent(this, Chat::class.java)
+        //intent.putExtra("CITY_INDEX", ListCities.instance.indexOf(city))
         //val bundle = Bundle().apply { putSerializable("USER_OBJECT", user) }
         //intent.putExtras(bundle)
         startActivity(intent)
