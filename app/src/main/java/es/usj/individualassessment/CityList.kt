@@ -294,11 +294,10 @@ class CityList : AppCompatActivity() {
             // Se accede a la actividad, pero luego cuando intento registro y accesso lanza la misma excepción
             binding.ivChatAccess.setOnClickListener {
                 val intent = Intent(context, LoginActivity::class.java)
-                city.loadcomentaries()
+                //city.loadcomentaries()
                 val index = ListCities.instance.indexOf(city)
                 intent.putExtra("CITY_INDEX", index)
                 context.startActivity(intent)
-                finish()
             }
 
             return rowView

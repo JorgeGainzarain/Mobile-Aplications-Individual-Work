@@ -103,7 +103,11 @@ public class City {
                             String color = comentariesnapshot.child("user").child("color").getValue(String.class);
                             User usr = new User(username, mail, color);
 
-                            Message message = new Message(usr, msg, time);
+                            String id = comentariesnapshot.getKey();
+
+
+                            Message message = new Message(usr, msg, time, id);
+
                             comentaries.add(message);
                         } else {
                             Log.d("LoadComentaries", "Message or time is null");
@@ -125,12 +129,14 @@ public class City {
     }
 
 
-    public void addComment(Message msg) {
+    public void addComment(User user, String message, String time) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference cityRef = database.child("cities").child(id()).child("commentaries");
 
         // Generate a new unique key for the new message
         String messageKey = cityRef.push().getKey();
+
+        Message msg = new Message(user, message, time, messageKey);
 
         if (messageKey != null) {
             cityRef.child(messageKey).setValue(msg).addOnCompleteListener(task -> {

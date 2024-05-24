@@ -30,6 +30,7 @@
             android:layout_weight="1"
             android:id="@+id/textInput"
             android:layout_height="45dp"
+            android:textColor="@color/white"
             android:layout_width="0dip">
             <requestFocus />
         </EditText>
@@ -39,4 +40,6 @@
             android:layout_width="125dp"
             android:id="@+id/btnSend" />
     </LinearLayout>
+
+
 </LinearLayout>

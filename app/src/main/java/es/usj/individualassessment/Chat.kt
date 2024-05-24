@@ -54,8 +54,9 @@ class Chat : AppCompatActivity() {
             finish() // Close the activity if the index is invalid
         }
 
-        messages = mutableListOf()
-        messages.addAll(city.getcomentaries())
+        city.loadcomentaries()
+
+        messages = city.getcomentaries().toMutableList()
 
         // Create adapter with custom layout and set it to the ListView
         adapter = ChatAdapter(messages)
@@ -65,11 +66,9 @@ class Chat : AppCompatActivity() {
         view.btnSend.setOnClickListener{
             val msg = view.textInput.text
             val currTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-            val message = Message(User.getInstance(), msg.toString(), currTime)
 
-            city.addComment(message)
-            //messages.add(message)
-            //adapter.notifyDataSetChanged()
+            city.addComment(User.getInstance(), msg.toString(), currTime)
+            view.textInput.text.clear()
         }
 
         cityRef = database!!.child("cities").child(city.id()).child("commentaries")
@@ -107,15 +106,32 @@ class Chat : AppCompatActivity() {
                         ).toString()
                     val usr = User(username, mail, color)
 
-                    val message = Message(usr, msg, time)
+                    val message = Message(usr, msg, time, dataSnapshot.key)
 
                     messages.add(message)
                     adapter.notifyDataSetChanged()
                 }
             }
 
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
+                // Get the unique ID of the removed message
+                val removedMessageId = dataSnapshot.key
+
+                // Find the corresponding message in the messages list and remove it
+                val iterator = messages.iterator()
+                while (iterator.hasNext()) {
+                    val message = iterator.next()
+                    if (message.id == removedMessageId) {
+                        iterator.remove()
+                        break // No need to continue searching once the message is found
+                    }
+                }
+
+                // Notify adapter that data set has changed
+                adapter.notifyDataSetChanged()
+            }
+
             override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
             override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e("Chat", "Failed to load messages.", databaseError.toException())
@@ -164,6 +180,36 @@ class Chat : AppCompatActivity() {
 
             // Set the modified drawable as the source of the ShapeableImageView
             binding.pfp.setImageDrawable(drawable)
+
+            if (User.getInstance().userName.equals(user.userName)) {
+                // If the current user is the same as the message user, show the delete button
+                binding.delete.setVisibility(View.VISIBLE)
+                binding.delete.setOnClickListener {
+                    // Remove the message from the database
+
+                    val message = messages[position]
+                    val messageId = message.id
+
+                    if (messageId != null) {
+                        val cityRef = FirebaseDatabase.getInstance().getReference().child("cities").child(city.id())
+                        val messageRef = cityRef.child("commentaries").child(messageId)
+                        messageRef.removeValue()
+                            .addOnSuccessListener {
+                                // Message successfully removed from the database
+                                Log.d("DeleteMessage", "Message removed successfully")
+                            }
+                            .addOnFailureListener { e ->
+                                // Failed to remove message from the database
+                                Log.e("DeleteMessage", "Failed to remove message", e)
+                            }
+                    } else {
+                        Log.e("DeleteMessage", "Message ID is null")
+                    }
+                }
+            } else {
+                // If the current user is different, hide the delete button
+                binding.delete.setVisibility(View.GONE)
+            }
 
 
             return rowView
