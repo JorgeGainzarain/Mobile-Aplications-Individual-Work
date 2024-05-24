@@ -3,16 +3,29 @@ package es.usj.individualassessment.Classes;
 import android.annotation.SuppressLint;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Comment;
 
 import java.text.ParseException;
+import java.util.concurrent.CompletableFuture;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import es.usj.individualassessment.Classes.Comparators.CalendarComparator;
+import kotlin.random.Random;
 
 public class City {
     private String name;
@@ -26,9 +39,13 @@ public class City {
     private Day today;
     private Boolean favourite;
 
+    private List<Message> comentaries;
+
 
     public City(String jsonString) {
         try {
+            comentaries = new ArrayList<>();
+
             JSONObject jsonObject = new JSONObject(jsonString);
             this.name = jsonObject.getString("address");
             this.latitude = jsonObject.getDouble("latitude");
@@ -57,6 +74,83 @@ public class City {
             e.printStackTrace();
         }
     }
+
+    public void loadcomentaries() {
+        comentaries.clear();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        String cityId = id(); // Store the ID in a variable to ensure consistency
+        Log.d("LoadComentaries", "City ID: " + cityId); // Log the city ID to verify it's correct
+
+        DatabaseReference cityRef = database.child("cities").child(cityId).child("commentaries");
+
+
+        cityRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot comentariesnapshot : dataSnapshot.getChildren()) {
+                        for (DataSnapshot childSnapshot : comentariesnapshot.getChildren()) {
+                            Log.d("ComentaryChild", "Key: " + childSnapshot.getKey() + ", Value: " + childSnapshot.getValue());
+                        }
+
+                        String msg = comentariesnapshot.child("message").getValue(String.class);
+                        String time = comentariesnapshot.child("time").getValue(String.class);
+
+                        if (msg != null && time != null) {
+                            // Assuming user details are stored under a 'user' node
+                            String username = comentariesnapshot.child("user").child("userName").getValue(String.class);
+                            String mail = comentariesnapshot.child("user").child("userMail").getValue(String.class);
+                            String color = comentariesnapshot.child("user").child("color").getValue(String.class);
+                            User usr = new User(username, mail, color);
+
+                            Message message = new Message(usr, msg, time);
+                            comentaries.add(message);
+                        } else {
+                            Log.d("LoadComentaries", "Message or time is null");
+                        }
+                    }
+                    Log.d("LoadComentaries", "Comentaries loaded: " + comentaries.size());
+
+                } else {
+                    Log.d("LoadComentaries", "No comments found for city ID: " + cityId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("LoadComentaries", "Error loading city", databaseError.toException());
+            }
+        });
+
+    }
+
+
+    public void addComment(Message msg) {
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference cityRef = database.child("cities").child(id()).child("commentaries");
+
+        // Generate a new unique key for the new message
+        String messageKey = cityRef.push().getKey();
+
+        if (messageKey != null) {
+            cityRef.child(messageKey).setValue(msg).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("AddComment", "Comment added successfully");
+                } else {
+                    Log.e("AddComment", "Error adding comment", task.getException());
+                }
+            });
+        } else {
+            Log.e("AddComment", "Error generating unique key for message");
+        }
+    }
+
+
+    public String id() {
+        return name + ", " + country;
+    }
+
+
 
     public JSONObject toJSON() {
         StringBuilder resolvedAddress = new StringBuilder();
@@ -135,6 +229,7 @@ public class City {
         }
     }
 
+
     public static Calendar getLocalCalendar(int tzOffset, Date date) {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         calendar.setTime(date);
@@ -200,6 +295,11 @@ public class City {
         Log.d("UpdateDebug", "Test Control 0");
         history.replaceDay(today, newDay);
         this.today = newDay;
+    }
+
+
+    public List<Message> getcomentaries() {
+        return comentaries;
     }
 
 

@@ -93,8 +93,9 @@ public class ListCities extends ArrayList<City> {
             LocalDate todayDate = LocalDate.parse(dateString, formatter);
             LocalDate lastHistDay = LocalDate.parse(city.firstPredictionDay().getDateString(), formatter);
 
+
             // Check if today is after the last day marked as history
-            if (todayDate.isAfter(lastHistDay)) {
+            if (todayDate.isAfter(lastHistDay) && !city.firstPredictionDay().hasHours()) {
                 String cityData = fetchWeatherForCity(
                         city.getName(),
                         lastHistDay.plusDays(1),

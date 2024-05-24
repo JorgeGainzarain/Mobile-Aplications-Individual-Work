@@ -1,0 +1,12 @@
+<!-- res/drawable/pfp_circle_with_image.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bottom layer: Circle background -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/dark_blue" /> <!-- Circle color -->
+        </shape>
+    </item>
+    <!-- Top layer: Image -->
+    <item android:drawable="@drawable/default_pfp"
+        android:gravity="center" /> <!-- Center the image -->
+</layer-list>

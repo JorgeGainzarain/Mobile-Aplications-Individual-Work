@@ -26,6 +26,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/pfp"
+            android:src="@drawable/pfp_circle"
             android:background="@drawable/rounded_border_day"
             android:layout_marginStart="10dp"
             android:layout_centerVertical="true"

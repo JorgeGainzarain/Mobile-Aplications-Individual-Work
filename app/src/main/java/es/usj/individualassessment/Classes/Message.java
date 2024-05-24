@@ -1,10 +1,16 @@
 package es.usj.individualassessment.Classes;
+import java.util.Date;
 
 public class Message {
     private User user;
     private String time;
     private String message;
 
+    public Message() {
+        this.user = new User("DefaultUser", "defaultPass");
+        this.time = new Date().toString();
+        this.message = "Default Message";
+    }
     public Message(User user, String message, String time) {
         this.user = user;
         this.time = time;

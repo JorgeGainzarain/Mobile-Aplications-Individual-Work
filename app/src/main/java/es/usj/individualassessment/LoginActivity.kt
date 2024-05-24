@@ -88,6 +88,8 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val authUser = auth.currentUser
                     val user = User(authUser)
+                    user.userName = username
+
                     showMessage("Login Successful")
                     authUser?.let { openChat(user) }
                 } else {
@@ -128,6 +130,7 @@ class LoginActivity : AppCompatActivity() {
     private fun openChat(user: User) {
         User.setInstance(user)
         val intent = Intent(this, Chat::class.java)
+        intent.putExtra("CITY_INDEX", ListCities.instance.indexOf(city))
         startActivity(intent)
     }
 
