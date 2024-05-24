@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginVertical="3dp"
+    android:layout_marginHorizontal="10dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/blue"
+    app:cardUseCompatPadding="true"
+    android:background="@drawable/card_border"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/relativelayout"
+        android:background="@drawable/card_border"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/pfp"
+            android:background="@drawable/rounded_border_day"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            />
+
+
+        <!-- User Name -->
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="57dp"
+            android:background="@drawable/square_border_day"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="2dp"
+            android:text="User Name"
+            android:maxLines="1"
+            android:textColor="@color/dark_blue"
+            android:textSize="11dp" />
+
+        <!-- Message -->
+        <TextView
+            android:id="@+id/messageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userName"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="42dp"
+            android:layout_toEndOf="@+id/pfp"
+            android:gravity="center_vertical"
+            android:text="Message"
+            android:textColor="@color/dark_blue"
+            android:textSize="20sp" />
+
+        <!-- Hour -->
+        <TextView
+            android:id="@+id/hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/messageText"
+            android:text="00:00"
+            android:textColor="@color/dark_blue"
+            android:textSize="13sp" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

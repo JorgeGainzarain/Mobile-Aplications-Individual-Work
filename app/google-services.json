@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "3632707506",
+    "firebase_url": "https://group-work-chat-default-rtdb.europe-west1.firebasedatabase.app/",
+    "project_id": "group-work-chat",
+    "storage_bucket": "group-work-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3632707506:android:b6f89ade6f0b90ab25d6ab",
+        "android_client_info": {
+          "package_name": "es.usj.individualassessment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNTxnC_yQ3T0gY7vX01thijWidzWkywp4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -30,7 +30,7 @@ import java.util.Date
 class CityList : AppCompatActivity() {
 
     private val view by lazy { ActivityCityListBinding.inflate(layoutInflater) }
-    private lateinit var adapter: CityListAdapter
+    private lateinit var adapter: ChatAdapter
 
     private lateinit var listCities: MutableList<City>
 
@@ -79,7 +79,7 @@ class CityList : AppCompatActivity() {
 
 
         // Create adapter with custom layout and set it to the ListView
-        adapter = CityListAdapter(listCities)
+        adapter = ChatAdapter(listCities)
         view.CitiesList.adapter = adapter
 
 
@@ -220,7 +220,7 @@ class CityList : AppCompatActivity() {
     }
 
 
-    inner class CityListAdapter(cities: List<City>) :
+    inner class ChatAdapter(cities: List<City>) :
         ArrayAdapter<City>(this@CityList, R.layout.list_item, cities) {
 
         @SuppressLint("DiscouragedApi")
@@ -290,6 +290,15 @@ class CityList : AppCompatActivity() {
                 context.startActivity(intent)
             }
 
+            // Set the click listener to start LoginActivity activity
+            // Se accede a la actividad, pero luego cuando intento registro y accesso lanza la misma excepción
+            binding.ivChatAccess.setOnClickListener {
+                val intent = Intent(context, LoginActivity::class.java)
+                val index = ListCities.instance.indexOf(city)
+                intent.putExtra("CITY_INDEX", index)
+                context.startActivity(intent)
+            }
+
             return rowView
         }
         private fun updateFavourite(binding: ListItemBinding, city : City) {
@@ -300,5 +309,13 @@ class CityList : AppCompatActivity() {
                 binding.favourite.setImageResource(R.drawable.starborder_icon)
             }
         }
+
+        private fun accessToCityDetails(city: City){
+            val intent = Intent(context, DetailedCity::class.java)
+            val index = ListCities.instance.indexOf(city)
+            intent.putExtra("CITY_INDEX", index)
+            context.startActivity(intent)
+        }
+
     }
 }
