@@ -8,10 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -38,8 +40,9 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
+        FirebaseApp.initializeApp(this)
         auth = Firebase.auth
-        database = Firebase.database.reference
+        database = FirebaseDatabase.getInstance().reference
 
         getCityIndex()
         manageLoginDetails()
