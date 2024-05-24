@@ -12,8 +12,11 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.database
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -40,9 +43,14 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        FirebaseApp.initializeApp(this)
-        auth = Firebase.auth
+        // Ensure FirebaseApp is initialized before using it
+        if (FirebaseApp.getApps(this).isEmpty()) {
+            FirebaseApp.initializeApp(this)
+        }
+
+
         database = FirebaseDatabase.getInstance().reference
+        auth = Firebase.auth
 
         getCityIndex()
         manageLoginDetails()
