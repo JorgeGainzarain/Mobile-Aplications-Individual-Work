@@ -44,8 +44,8 @@ class Chat : AppCompatActivity() {
         */
 
 
-        val user1 = User("Jorge","jorge@mail.com", "pass123")
-        val user2 = User("Francisco", "francisco@gmail.com", "pass456")
+        val user1 = User("Jorge","jorge@mail.com")
+        val user2 = User("Francisco", "francisco@gmail.com")
 
 
         messages = mutableListOf()

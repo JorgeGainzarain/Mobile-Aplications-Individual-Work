@@ -7,24 +7,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.database
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
+import com.google.firebase.ktx.Firebase
 import es.usj.individualassessment.Classes.City
 import es.usj.individualassessment.Classes.User
 import es.usj.individualassessment.Classes.ListCities
 import es.usj.individualassessment.databinding.ActivityLoginBinding
-import java.io.File
 
 class LoginActivity : AppCompatActivity() {
 
@@ -108,9 +100,10 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword("$username@example.com", password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val user = auth.currentUser
+                    val authUser = auth.currentUser
+                    val user = User(authUser)
                     showMessage("Login Successful")
-                    user?.let { openChat(it) }
+                    authUser?.let { openChat(user) }
                 } else {
                     showMessage("Login Failed: ${task.exception?.message}")
                 }
@@ -124,11 +117,11 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     val firebaseUser = auth.currentUser
-                    val user = User(username, "$username@example.com", password)
+                    val user = User(username, "$username@example.com")
                     firebaseUser?.let {
                         database.child("users").child(it.uid).setValue(user)
                         showMessage("Registration Successful")
-                        openChat(it)
+                        openChat(user)
                     }
                 } else {
                     showMessage("Registration Failed: ${task.exception?.message}")
@@ -136,7 +129,8 @@ class LoginActivity : AppCompatActivity() {
             }
     }
 
-    private fun openChat(user: FirebaseUser) {
+    private fun openChat(user: User) {
+        User.setInstance(user)
         val intent = Intent(this, Chat::class.java)
         startActivity(intent)
     }

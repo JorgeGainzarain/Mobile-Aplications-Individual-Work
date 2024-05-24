@@ -1,5 +1,7 @@
 package es.usj.individualassessment.Classes;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,12 +12,14 @@ public class User implements Serializable {
     private static User instance;
     private String userName;
     private String userMail;
-    private String password;
 
-    public User(String userName, String userMail, String password){
+    public User(FirebaseUser authUser) {
+        this.userName = authUser.getDisplayName();
+        this.userMail = authUser.getEmail();
+    }
+    public User(String userName, String userMail){
         this.userName = userName;
         this.userMail = userMail;
-        this.password = password;
     }
 
     public static User getInstance() {
@@ -42,12 +46,5 @@ public class User implements Serializable {
         this.userMail = userMail;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 }
