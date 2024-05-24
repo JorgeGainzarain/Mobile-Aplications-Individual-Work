@@ -1,13 +1,16 @@
 package es.usj.individualassessment
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.google.firebase.database.DatabaseReference
 import es.usj.individualassessment.Classes.City
 import es.usj.individualassessment.Classes.Message
 import es.usj.individualassessment.Classes.User
@@ -16,6 +19,7 @@ import es.usj.individualassessment.databinding.ActivityChatBinding
 import es.usj.individualassessment.databinding.MessageItemBinding
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import com.google.firebase.firestore.FirebaseFirestore
 
 class Chat : AppCompatActivity() {
 
@@ -27,49 +31,55 @@ class Chat : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContentView(view.root)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        /*
-        val cityIndex = intent.getIntExtra("CITY_INDEX", -1)
-        if (cityIndex != -1) {
-            city = ListCities.instance[cityIndex]
-        } else {
-            // Handle the case where the index is invalid
-            finish() // Close the activity if the index is invalid
-        }
-        */
-
-
-        val user1 = User("Jorge","jorge@mail.com")
-        val user2 = User("Francisco", "francisco@gmail.com")
-
-
+        val db = FirebaseFirestore.getInstance()
         messages = mutableListOf()
-
-
-
-        messages.add(Message(user1, "Hello!", "12:00"))
-        messages.add(Message(user2, "Hi there!", "12:05"))
-
 
         // Create adapter with custom layout and set it to the ListView
         adapter = ChatAdapter(messages)
         view.listViewMessages.adapter = adapter
 
-
         view.btnSend.setOnClickListener{
-            val msg = view.textInput.text
+            val msg = view.textInput.text.toString()
             val currTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-            messages.add(Message(User.getInstance(), msg.toString(), currTime))
+            val user = User.getInstance() // Get current user
+            val newMessage = Message(user, msg, currTime)
+            storeMessage(newMessage, db)
+            // Update UI with new message (optional)
+            messages.add(newMessage)
             adapter.notifyDataSetChanged()
         }
 
     }
 
+    fun storeMessage(message: Message, db: FirebaseFirestore) {
+        // Add a new document with a generated ID
+        db.collection("messages")
+            .add(message)
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+    }
+
+    fun retrieveMessages(db: FirebaseFirestore) {
+        db.collection("messages")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val message = document.toObject(Message::class.java)
+                    messages.add(message)
+                }
+                adapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting documents.", exception)
+            }
+    }
 
     inner class ChatAdapter(messages: MutableList<Message>) :
         ArrayAdapter<Message>(this@Chat, R.layout.list_item, messages) {
