@@ -1,4 +1,4 @@
-# Weather-Mobile-App
+# Weather Mobile App
 
 ## Description
 This project is an individual work assignment for a Mobile Applications course. It's an Android application developed using Kotlinand Java in Android Studio.
