@@ -48,7 +48,7 @@ This project is an individual work assignment for a Mobile Applications course. 
 - JVM Target: 1.8
 
 ## Installation
-1. Clone the repository: git clone https://github.com/neodr/Weather-Mobile-App/.git
+1. Clone the repository: `git clone https://github.com/neodr/Weather-Mobile-App/.git`
 2. Open the project in Android Studio.
 3. Sync the project with Gradle files.
 4. Run the app on an emulator or physical device.
